@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "net/http"
+    "os"
 )
 
 func main() {
@@ -11,10 +12,18 @@ func main() {
         fmt.Fprintf(w, "Привет, %s!", name)
     })
 
-    // Раздаём статические файлы (включая изображения)
     fs := http.FileServer(http.Dir("./static"))
     http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-    fmt.Println("Сервер запущен на http://localhost:8080")
-    http.ListenAndServe(":8080", nil)
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080"
+    }
+
+    fmt.Println("Сервер запущен на http://localhost:" + port)
+    err := http.ListenAndServe(":"+port, nil)
+    if err != nil {
+        fmt.Println("Ошибка запуска сервера:", err)
+        os.Exit(1)
+    }
 }
