@@ -9,9 +9,13 @@ import (
 func main() {
     http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
         name := r.URL.Query().Get("name")
+        if name == "" {
+            name = "Гость"
+        }
         fmt.Fprintf(w, "Привет, %s!", name)
     })
 
+    // Раздача статики
     fs := http.FileServer(http.Dir("./static"))
     http.Handle("/static/", http.StripPrefix("/static/", fs))
 
